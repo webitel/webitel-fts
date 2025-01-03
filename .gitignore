@@ -1,0 +1,5 @@
+/bin/
+/gen/
+/go.sum
+/cmd/wire_gen.go
+.idea/

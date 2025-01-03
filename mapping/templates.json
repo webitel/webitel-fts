@@ -1,0 +1,204 @@
+[
+  {
+    "name": "cc_queue",
+    "data": {
+      "index_patterns" : ["cc_queue*"],
+      "priority": 2,
+      "template": {
+        "mappings": {
+          "properties": {
+            "id": {
+              "type": "long"
+            },
+            "domain_id": {
+              "type": "long"
+            },
+            "created_at": {
+              "type": "date",
+              "format": "epoch_second"
+            },
+            "created_by": {
+              "properties": {
+                "id": {
+                  "type": "long"
+                },
+                "name": {
+                  "type": "text"
+                }
+              }
+            },
+            "updated_at": {
+              "type": "date",
+              "format": "epoch_second"
+            },
+            "updated_by": {
+              "properties": {
+                "id": {
+                  "type": "long"
+                },
+                "name": {
+                  "type": "text"
+                }
+              }
+            },
+            "strategy": {
+              "type": "keyword"
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "payload": {
+              "type": "object"
+            },
+            "calendar": {
+              "properties": {
+                "id": {
+                  "type": "long"
+                },
+                "name": {
+                  "type": "text"
+                }
+              }
+            },
+            "priority": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "keyword"
+            },
+            "variables": {
+              "type": "object"
+            },
+            "dnc_list": {
+              "properties": {
+                "id": {
+                  "type": "long"
+                },
+                "name": {
+                  "type": "text"
+                }
+              }
+            },
+            "type": {
+              "type": "byte"
+            },
+            "team": {
+              "properties": {
+                "id": {
+                  "type": "long"
+                },
+                "name": {
+                  "type": "text"
+                }
+              }
+            },
+            "schema": {
+              "properties": {
+                "id": {
+                  "type": "long"
+                },
+                "name": {
+                  "type": "text"
+                }
+              }
+            },
+            "description": {
+              "type": "text"
+            },
+            "count": {
+              "type": "integer"
+            },
+            "waiting": {
+              "type": "integer"
+            },
+            "active": {
+              "type": "integer"
+            },
+            "ringtone": {
+              "properties": {
+                "id": {
+                  "type": "long"
+                },
+                "name": {
+                  "type": "text"
+                }
+              }
+            },
+            "do_schema": {
+              "properties": {
+                "id": {
+                  "type": "long"
+                },
+                "name": {
+                  "type": "text"
+                }
+              }
+            },
+            "after_schema": {
+              "properties": {
+                "id": {
+                  "type": "long"
+                },
+                "name": {
+                  "type": "text"
+                }
+              }
+            },
+            "sticky_agent": {
+              "type": "boolean"
+            },
+            "processing": {
+              "type": "boolean"
+            },
+            "processing_sec": {
+              "type": "long"
+            },
+            "processing_renewal_sec": {
+              "type": "long"
+            },
+            "form_schema": {
+              "properties": {
+                "id": {
+                  "type": "long"
+                },
+                "name": {
+                  "type": "text"
+                }
+              }
+            },
+            "task_processing": {
+              "properties": {
+                "id": {
+                  "type": "long"
+                },
+                "status": {
+                  "type": "keyword"
+                },
+                "details": {
+                  "type": "text"
+                }
+              }
+            },
+            "grantee": {
+              "properties": {
+                "id": {
+                  "type": "long"
+                },
+                "name": {
+                  "type": "text"
+                }
+              }
+            },
+            "tags": {
+              "type": "keyword"
+            }
+          }
+        },
+        "settings": {
+          "number_of_shards": 2,
+          "number_of_replicas": 2
+        }
+      }
+    }
+  }
+]
