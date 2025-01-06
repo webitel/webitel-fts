@@ -18,11 +18,10 @@ var wireAppResourceSet = wire.NewSet(
 
 var wireAppHandlersSet = wire.NewSet(
 	store.NewIndexEngine,
-	service.NewSearchEngine, wire.Bind(new(service.SearchEngineStore), new(*store.IndexEngine)),
-	handler.NewSearchEngine, wire.Bind(new(handler.SearchEngineService), new(*service.SearchEngine)),
+	service.NewIndexEngine, wire.Bind(new(service.IndexEngineStore), new(*store.IndexEngine)),
+	handler.NewSearchEngine, wire.Bind(new(handler.SearchEngineService), new(*service.IndexEngine)),
 
-	service.NewSubscriber, wire.Bind(new(service.IndexEngineStore), new(*store.IndexEngine)),
-	handler.NewSubscriber, wire.Bind(new(handler.SubscriberService), new(*service.Subscriber)),
+	handler.NewSubscriber, wire.Bind(new(handler.SubscriberService), new(*service.IndexEngine)),
 )
 
 func initAppResources(context.Context, *config.Config) (*resources, func(), error) {

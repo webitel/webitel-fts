@@ -152,20 +152,6 @@ func (s *OpenSearch) Template(ctx context.Context, name string, body []byte) err
 	return nil
 }
 
-type QueryString struct {
-	Query string `json:"query"`
-}
-
-type BaseQuery struct {
-	Sort         []map[string]any `json:"sort"`
-	Version      bool             `json:"version"`
-	Size         int              `json:"size"`
-	StoredFields []string         `json:"stored_fields"`
-	Query        map[string]any   `json:"query"`
-	Highlight    map[string]any   `json:"highlight"`
-	Source       any              `json:"_source"`
-}
-
 type Highlight map[string][]string
 
 type Hits struct {
@@ -185,17 +171,17 @@ type Response struct {
 
 func (s *OpenSearch) Search(ctx context.Context, IndexName []string, text string, limit int) ([]searchengine.SearchResult, error) {
 
-	q := BaseQuery{
-		Size: limit,
-		Sort: []map[string]interface{}{
+	q := map[string]any{
+		"size": limit,
+		"sort": []map[string]any{
 			{
 				"_score": map[string]any{
 					"order": "desc",
 				},
 			},
 		},
-		Source: map[string]any{},
-		Highlight: map[string]any{
+		"_source": map[string]any{},
+		"highlight": map[string]any{
 			"fields": map[string]any{
 				"*": map[string]any{},
 			},
@@ -203,24 +189,23 @@ func (s *OpenSearch) Search(ctx context.Context, IndexName []string, text string
 			"pre_tags":            []string{"<strong>"},
 			"post_tags":           []string{"</strong>"},
 		},
-		//Version:      true,
-		StoredFields: []string{"*"},
-		Query: map[string]any{
+		"stored_fields": []string{"*"},
+		"query": map[string]any{
 			"bool": map[string]any{
 				"filter": []map[string]any{
 					{
-						"query_string": QueryString{
-							Query: text,
+						"query_string": map[string]any{
+							"query": text,
 						},
 					},
 				},
 			},
 		},
 	}
-
-	data, _ := json.Marshal(q)
-
-	fmt.Println(string(data))
+	data, err := json.Marshal(q)
+	if err != nil {
+		return nil, err
+	}
 
 	// Search for the document.
 	content := bytes.NewReader(data)
@@ -243,9 +228,11 @@ func (s *OpenSearch) Search(ctx context.Context, IndexName []string, text string
 
 	t, _ := io.ReadAll(searchResponse.Body)
 	var res Response
-	json.Unmarshal(t, &res)
 
-	fmt.Println(string(t))
+	err = json.Unmarshal(t, &res)
+	if err != nil {
+		return nil, err
+	}
 
 	var response []searchengine.SearchResult
 
