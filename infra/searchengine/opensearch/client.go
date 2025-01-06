@@ -85,6 +85,52 @@ func (s *OpenSearch) Insert(ctx context.Context, id string, index string, body [
 	return nil
 }
 
+func (s *OpenSearch) Update(ctx context.Context, id string, index string, body []byte) error {
+
+	doc := make(map[string]json.RawMessage)
+	doc["doc"] = body
+
+	body, _ = json.Marshal(doc)
+
+	document := bytes.NewReader(body)
+	req := opensearchapi.UpdateRequest{
+		Index:      index,
+		DocumentID: id,
+		Body:       document,
+	}
+	insertResponse, err := req.Do(ctx, s.cli)
+	if err != nil {
+		return err
+	}
+	defer insertResponse.Body.Close()
+
+	if insertResponse.IsError() {
+		res, _ := io.ReadAll(insertResponse.Body)
+		return errors.New(string(res))
+	}
+
+	return nil
+}
+
+func (s *OpenSearch) Delete(ctx context.Context, id string, index string) error {
+	del := opensearchapi.DeleteRequest{
+		Index:      index,
+		DocumentID: id,
+	}
+	deleteResponse, err := del.Do(context.Background(), s.cli)
+	if err != nil {
+		return err
+	}
+	defer deleteResponse.Body.Close()
+
+	if deleteResponse.IsError() {
+		res, _ := io.ReadAll(deleteResponse.Body)
+		return errors.New(string(res))
+	}
+
+	return nil
+}
+
 func (s *OpenSearch) Template(ctx context.Context, name string, body []byte) error {
 	document := bytes.NewReader(body)
 	req := opensearchapi.IndicesPutIndexTemplateRequest{

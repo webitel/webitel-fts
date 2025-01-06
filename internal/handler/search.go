@@ -27,10 +27,12 @@ func NewSearchEngine(svc SearchEngineService, s *grpc.Server, _ *pubsub.Manager)
 }
 
 func (h *SearchEngine) Search(ctx context.Context, in *pb.SearchRequest) (*pb.SearchResponse, error) {
-	items, next, err := h.svc.Search(ctx, nil, &model.SearchQuery{
-		Q:     in.GetQ(),
-		Scope: in.GetScope(),
-		Limit: int(in.GetLimit()),
+	items, next, err := h.svc.Search(ctx, &model.SignedInUser{
+		DomainId: 1,
+	}, &model.SearchQuery{
+		Q:           in.GetQ(),
+		ObjectsName: in.GetObjectName(),
+		Limit:       int(in.GetLimit()),
 	})
 
 	if err != nil {
@@ -41,9 +43,9 @@ func (h *SearchEngine) Search(ctx context.Context, in *pb.SearchRequest) (*pb.Se
 
 	for _, v := range items {
 		data = append(data, &pb.SearchData{
-			Id:    fmt.Sprintf("%v", v.Id),
-			Scope: v.Scope,
-			Text:  v.Text,
+			Id:         fmt.Sprintf("%v", v.Id),
+			ObjectName: v.ObjectName,
+			Text:       v.Text,
 		})
 	}
 

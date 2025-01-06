@@ -17,11 +17,19 @@ func importCmd(cfg *config.Config) *cli.Command {
 		Usage:   "Import data",
 		Flags:   importFlags(cfg, &index),
 		Action: func(c *cli.Context) error {
-			q := `select id, domain_id, name, created_by, updated_by, created_at, updated_at, calendar, dnc_list,
-       team, description, schema, task_processing, tags
-from call_center.cc_queue_list;`
+			q := `select c.id, c.dc,
+       c.about, c.given_name, c.middle_name, c.family_name,
+       c.common_name,
+       (select json_agg(p.number) phones
+        from contacts.contact_phone p
+        where p.contact_id = c.id),
+       (select json_agg(e.email) email
+        from contacts.contact_email e
+        where e.contact_id = c.id)
+from contacts.contact c`
+
 			colId := "id"
-			colDom := "domain_id"
+			colDom := "dc"
 			return importData(cfg, q, colId, colDom, index)
 		},
 	}

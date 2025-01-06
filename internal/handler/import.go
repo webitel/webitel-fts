@@ -32,7 +32,7 @@ func (i *ImportData) Import(ctx context.Context, q string, colId string, colDoma
 
 	defer rows.Close()
 
-	fields := rows.FieldDescriptions()
+	fields := rows.Columns()
 
 	cols := make([]interface{}, len(fields))
 	colPtrs := make([]interface{}, len(fields))
@@ -45,7 +45,7 @@ func (i *ImportData) Import(ctx context.Context, q string, colId string, colDoma
 			return err
 		}
 		msg := model.Message{
-			Id:         nil,
+			Id:         "",
 			DomainId:   0,
 			ObjectName: objectName,
 			Date:       0,
@@ -53,9 +53,9 @@ func (i *ImportData) Import(ctx context.Context, q string, colId string, colDoma
 		}
 		body := make(map[string]interface{})
 		for i, col := range cols {
-			switch fields[i].Name {
+			switch fields[i] {
 			case colId:
-				msg.Id = fmt.Sprintf("%v", col)
+				msg.Id = model.MessageId(fmt.Sprintf("%v", col))
 			case colDomainId:
 				var ok bool
 				msg.DomainId, ok = col.(int64)
@@ -63,7 +63,7 @@ func (i *ImportData) Import(ctx context.Context, q string, colId string, colDoma
 					panic(col)
 				}
 			default:
-				body[fields[i].Name] = col
+				body[fields[i]] = col
 			}
 
 		}

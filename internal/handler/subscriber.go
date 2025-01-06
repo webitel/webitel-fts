@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/webitel/webitel-fts/infra/pubsub"
 	"github.com/webitel/webitel-fts/internal/model"
 	"github.com/webitel/wlog"
@@ -11,6 +10,8 @@ import (
 
 type SubscriberService interface {
 	Create(ctx context.Context, msg model.Message) error
+	Update(ctx context.Context, msg model.Message) error
+	Delete(ctx context.Context, msg model.Message) error
 }
 
 type Subscriber struct {
@@ -77,6 +78,12 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 						continue
 					}
 
+					log := h.log.With(
+						wlog.Any("id", m.Id),
+						wlog.String("object_name", m.ObjectName),
+						wlog.Int64("domain_id", m.DomainId),
+					)
+
 					switch msg.RoutingKey {
 					case "create":
 						err = h.NewRecord(m)
@@ -85,13 +92,14 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 					case "delete":
 						err = h.DeleteRecord(m)
 					default:
-						h.log.Error("no handle routing key " + msg.RoutingKey)
+						log.Error("no handle routing key " + msg.RoutingKey)
 					}
 
 					if err == nil {
 						msg.Ack(true)
+						log.Debug("method " + msg.RoutingKey + " success")
 					} else {
-						h.log.Error(err.Error(), wlog.Err(err))
+						log.Error(err.Error(), wlog.Err(err))
 					}
 
 				}
@@ -109,11 +117,9 @@ func (s *Subscriber) NewRecord(msg model.Message) error {
 }
 
 func (s *Subscriber) UpdateRecord(msg model.Message) error {
-	fmt.Println(msg)
-	return nil
+	return s.svc.Update(context.TODO(), msg)
 }
 
 func (s *Subscriber) DeleteRecord(msg model.Message) error {
-	fmt.Println(msg)
-	return nil
+	return s.svc.Delete(context.TODO(), msg)
 }

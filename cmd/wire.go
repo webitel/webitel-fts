@@ -17,11 +17,10 @@ var wireAppResourceSet = wire.NewSet(
 )
 
 var wireAppHandlersSet = wire.NewSet(
-	store.NewSearchEngine,
-	service.NewSearchEngine, wire.Bind(new(service.SearchEngineStore), new(*store.SearchEngine)),
+	store.NewIndexEngine,
+	service.NewSearchEngine, wire.Bind(new(service.SearchEngineStore), new(*store.IndexEngine)),
 	handler.NewSearchEngine, wire.Bind(new(handler.SearchEngineService), new(*service.SearchEngine)),
 
-	store.NewIndexEngine,
 	service.NewSubscriber, wire.Bind(new(service.IndexEngineStore), new(*store.IndexEngine)),
 	handler.NewSubscriber, wire.Bind(new(handler.SubscriberService), new(*service.Subscriber)),
 )

@@ -2,7 +2,6 @@ package sql
 
 import (
 	"context"
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type Rows interface {
@@ -10,9 +9,7 @@ type Rows interface {
 	// to call Close after rows is already closed.
 	Close()
 
-	// FieldDescriptions returns the field descriptions of the columns. It may return nil. In particular this can occur
-	// when there was an error executing the query.
-	FieldDescriptions() []pgconn.FieldDescription
+	Columns() []string
 
 	// Err returns any error that occurred while reading. Err must only be called after the Rows is closed (either by
 	// calling Close or by Next returning false). If it is called early it may return nil even if there was an error

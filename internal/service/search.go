@@ -7,7 +7,7 @@ import (
 )
 
 type SearchEngineStore interface {
-	Search(ctx context.Context, user *model.SignedInUser, in *model.SearchQuery) ([]*model.SearchResult, error)
+	Search(ctx context.Context, domainId int64, in *model.SearchQuery) ([]*model.SearchResult, error)
 }
 
 type SearchEngine struct {
@@ -25,7 +25,7 @@ func NewSearchEngine(store SearchEngineStore, log *wlog.Logger) *SearchEngine {
 func (s *SearchEngine) Search(ctx context.Context, user *model.SignedInUser, search *model.SearchQuery) ([]*model.SearchResult, bool, error) {
 	search.Limit++
 	next := false
-	res, err := s.store.Search(ctx, user, search)
+	res, err := s.store.Search(ctx, user.DomainId, search)
 	if err != nil {
 		return nil, false, err
 	}

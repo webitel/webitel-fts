@@ -26,7 +26,7 @@ func setupFlags(cfg *config.Config, template *string) []cli.Flag {
 			Name:        "template",
 			Category:    "file",
 			Usage:       "JSON index template",
-			Value:       "./mapping/templates.json",
+			Value:       "./mapping/contacts.json",
 			Destination: template,
 			Aliases:     []string{"t"},
 			EnvVars:     []string{"INDEX_TEMPLATE"},

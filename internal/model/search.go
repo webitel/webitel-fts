@@ -1,13 +1,14 @@
 package model
 
 type SearchResult struct {
-	Id    any
-	Scope string
-	Text  string
+	Id         any
+	ObjectName string
+	Text       string
 }
 
 type SearchQuery struct {
-	Limit int
-	Q     string
-	Scope []string
+	DomainId    int64
+	Limit       int
+	Q           string
+	ObjectsName []string
 }

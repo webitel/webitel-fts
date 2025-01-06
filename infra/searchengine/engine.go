@@ -7,6 +7,9 @@ type SearchEngine interface {
 	Test() error
 
 	Insert(ctx context.Context, id string, index string, body []byte) error
+	Update(ctx context.Context, id string, index string, body []byte) error
+	Delete(ctx context.Context, id string, index string) error
+
 	Template(ctx context.Context, name string, body []byte) error
 
 	Search(ctx context.Context, IndexName []string, text string, limit int) ([]SearchResult, error)
