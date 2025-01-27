@@ -1,7 +1,7 @@
 package consul
 
 import (
-	"github.com/webitel/engine/discovery"
+	"github.com/webitel/engine/discovery" // TODO
 	"time"
 )
 

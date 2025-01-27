@@ -12,6 +12,7 @@ import (
 	"github.com/webitel/webitel-fts/infra/sql/pgsql"
 	"github.com/webitel/webitel-fts/infra/webitel"
 	"github.com/webitel/webitel-fts/internal/handler"
+	"github.com/webitel/webitel-fts/internal/model"
 	"github.com/webitel/wlog"
 	"strings"
 )
@@ -116,7 +117,7 @@ func setupSql(log *wlog.Logger, cfg *config.Config) (sql.Store, func(), error) {
 }
 
 func setupCluster(cfg *config.Config, srv *grpc.Server, l *wlog.Logger) (*consul.Cluster, func(), error) {
-	c := consul.NewCluster("fts", cfg.Service.Consul)
+	c := consul.NewCluster(model.ServiceName, cfg.Service.Consul)
 	err := c.Start(cfg.Service.Id, srv.Host(), srv.Port())
 
 	if err != nil {
