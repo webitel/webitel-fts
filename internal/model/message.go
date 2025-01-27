@@ -5,6 +5,12 @@ import (
 	"fmt"
 )
 
+const (
+	MessageCreate = "create"
+	MessageUpdate = "update"
+	MessageDelete = "delete"
+)
+
 type MessageId string
 
 type Message struct {
@@ -13,6 +19,7 @@ type Message struct {
 	ObjectName string          `json:"object_name,omitempty"`
 	Date       int64           `json:"date,omitempty"`
 	Body       json.RawMessage `json:"body,omitempty"`
+	data       []byte
 }
 
 func (id *MessageId) UnmarshalJSON(data []byte) error {
@@ -28,4 +35,26 @@ func (id *MessageId) UnmarshalJSON(data []byte) error {
 
 	*id = MessageId(fmt.Sprintf("%v", raw))
 	return nil
+}
+
+func NewMessageId(v any) MessageId {
+	return MessageId(fmt.Sprintf("%v", v))
+}
+
+func NewMessageJSON(domainId int64, objectName string, id any, row any) ([]byte, error) {
+	var err error
+	m := Message{
+		Id:         NewMessageId(id),
+		DomainId:   domainId,
+		ObjectName: objectName,
+		Body:       nil,
+	}
+	if row != nil {
+		m.Body, err = json.Marshal(row)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return json.Marshal(m)
 }

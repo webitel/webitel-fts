@@ -40,13 +40,13 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 			return err
 		}
 
-		if err = channel.BindQueue(queueName, "create", exchange, nil); err != nil {
+		if err = channel.BindQueue(queueName, model.MessageCreate, exchange, nil); err != nil {
 			return err
 		}
-		if err = channel.BindQueue(queueName, "update", exchange, nil); err != nil {
+		if err = channel.BindQueue(queueName, model.MessageUpdate, exchange, nil); err != nil {
 			return err
 		}
-		if err = channel.BindQueue(queueName, "delete", exchange, nil); err != nil {
+		if err = channel.BindQueue(queueName, model.MessageDelete, exchange, nil); err != nil {
 			return err
 		}
 
@@ -85,11 +85,11 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 					)
 
 					switch msg.RoutingKey {
-					case "create":
+					case model.MessageCreate:
 						err = h.NewRecord(m)
-					case "update":
+					case model.MessageUpdate:
 						err = h.UpdateRecord(m)
-					case "delete":
+					case model.MessageDelete:
 						err = h.DeleteRecord(m)
 					default:
 						rlog.Error("no handle routing key " + msg.RoutingKey)
