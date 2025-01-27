@@ -1,16 +1,18 @@
 package model
 
-type SignedInUser struct {
-	RbacOptions
-
-	Id       int64
-	DomainId int64
-	Token    string
-	Object   string
-	UseRBAC  bool
+type SessionPermission struct {
+	Id     int64
+	Class  string
+	Obac   bool
+	Rbac   bool
+	Access string
 }
 
-type RbacOptions struct {
-	Groups []int
-	Access uint32
+type Session struct {
+	Id       string              `json:"id"`
+	Name     string              `json:"name"`
+	DomainId int64               `json:"domain_id"`
+	Expire   int64               `json:"expire"`
+	UserId   int64               `json:"user_id"`
+	Scopes   []SessionPermission `json:"scopes"`
 }

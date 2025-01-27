@@ -39,7 +39,7 @@ func (s *IndexEngine) Delete(ctx context.Context, msg model.Message) error {
 	return s.store.Delete(ctx, msg)
 }
 
-func (s *IndexEngine) Search(ctx context.Context, user *model.SignedInUser, search *model.SearchQuery) ([]*model.SearchResult, bool, error) {
+func (s *IndexEngine) Search(ctx context.Context, user *model.Session, search *model.SearchQuery) ([]*model.SearchResult, bool, error) {
 	search.Limit++
 	next := false
 	res, err := s.store.Search(ctx, user.DomainId, search)

@@ -13,7 +13,7 @@ import (
 )
 
 var wireAppResourceSet = wire.NewSet(
-	search, log, grpcSrv, pubsubConn, setupCluster,
+	search, log, grpcSrv, pubsubConn, setupCluster, setupApiClient,
 )
 
 var wireAppHandlersSet = wire.NewSet(
@@ -26,13 +26,13 @@ var wireAppHandlersSet = wire.NewSet(
 
 func initAppResources(context.Context, *config.Config) (*resources, func(), error) {
 	wire.Build(wireAppResourceSet, wire.Struct(new(resources),
-		"search", "log", "grpcSrv", "pubsub", "cluster"))
+		"search", "log", "grpcSrv", "pubsub", "cluster", "apiClient"))
 	return &resources{}, nil, nil
 }
 
 func initAppHandlers(*resources) (*handlers, error) {
 	wire.Build(wireAppHandlersSet,
-		wire.FieldsOf(new(*resources), "search", "log", "grpcSrv", "pubsub"),
+		wire.FieldsOf(new(*resources), "search", "log", "grpcSrv", "pubsub", "apiClient"),
 		wire.Struct(new(handlers), "searchEngine", "subscriber"),
 	)
 

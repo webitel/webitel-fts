@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"github.com/webitel/webitel-fts/infra/webitel"
 	"github.com/webitel/wlog"
 	"google.golang.org/grpc"
 	"net"
@@ -17,9 +18,11 @@ type Server struct {
 }
 
 // New provides a new gRPC server.
-func New(addr string, log *wlog.Logger) (*Server, error) {
+func New(addr string, log *wlog.Logger, api *webitel.Client) (*Server, error) {
 
-	s := grpc.NewServer()
+	s := grpc.NewServer(grpc.ChainUnaryInterceptor(
+		authUnaryInterceptor(api),
+	))
 
 	h, p, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -47,7 +50,7 @@ func (s *Server) Listen() error {
 }
 
 func (s *Server) Shutdown() error {
-	s.log.Debug("receive shutdown grpc ")
+	s.log.Debug("receive shutdown grpc")
 	err := s.listener.Close()
 	s.Server.GracefulStop()
 	return err

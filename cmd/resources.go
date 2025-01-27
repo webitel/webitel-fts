@@ -10,6 +10,7 @@ import (
 	"github.com/webitel/webitel-fts/infra/searchengine/opensearch"
 	"github.com/webitel/webitel-fts/infra/sql"
 	"github.com/webitel/webitel-fts/infra/sql/pgsql"
+	"github.com/webitel/webitel-fts/infra/webitel"
 	"github.com/webitel/webitel-fts/internal/handler"
 	"github.com/webitel/wlog"
 	"strings"
@@ -24,16 +25,17 @@ type handlers struct {
 }
 
 type resources struct {
-	search  searchengine.SearchEngine
-	log     *wlog.Logger
-	grpcSrv *grpc.Server
-	pubsub  *pubsub.Manager
-	sql     sql.Store
-	cluster *consul.Cluster
+	search    searchengine.SearchEngine
+	log       *wlog.Logger
+	grpcSrv   *grpc.Server
+	pubsub    *pubsub.Manager
+	sql       sql.Store
+	cluster   *consul.Cluster
+	apiClient *webitel.Client
 }
 
-func grpcSrv(cfg *config.Config, l *wlog.Logger) (*grpc.Server, func(), error) {
-	s, err := grpc.New(cfg.Service.Address, l)
+func grpcSrv(cfg *config.Config, l *wlog.Logger, client *webitel.Client) (*grpc.Server, func(), error) {
+	s, err := grpc.New(cfg.Service.Address, l, client)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -122,6 +124,18 @@ func setupCluster(cfg *config.Config, srv *grpc.Server, l *wlog.Logger) (*consul
 	}
 	return c, func() {
 		c.Stop()
+	}, nil
+
+}
+
+func setupApiClient(cfg *config.Config, l *wlog.Logger) (*webitel.Client, func(), error) {
+	c, err := webitel.NewClient(cfg.Service.Consul, l)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return c, func() {
+		c.Close()
 	}, nil
 
 }

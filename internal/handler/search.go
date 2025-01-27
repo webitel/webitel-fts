@@ -3,33 +3,35 @@ package handler
 import (
 	"context"
 	"fmt"
-	pb "github.com/webitel/webitel-fts/gen/go/api/fts"
+	pb "github.com/webitel/webitel-fts/gen/api/fts"
 	"github.com/webitel/webitel-fts/infra/grpc"
-	"github.com/webitel/webitel-fts/infra/pubsub"
+	"github.com/webitel/webitel-fts/infra/webitel"
 	"github.com/webitel/webitel-fts/internal/model"
 )
 
 type SearchEngineService interface {
-	Search(ctx context.Context, user *model.SignedInUser, search *model.SearchQuery) ([]*model.SearchResult, bool, error)
+	Search(ctx context.Context, user *model.Session, search *model.SearchQuery) ([]*model.SearchResult, bool, error)
 }
 
 type SearchEngine struct {
 	pb.UnsafeFTSServiceServer
-	svc SearchEngineService
+	svc    SearchEngineService
+	client *webitel.Client
 }
 
-func NewSearchEngine(svc SearchEngineService, s *grpc.Server, _ *pubsub.Manager) *SearchEngine {
+func NewSearchEngine(svc SearchEngineService, s *grpc.Server, apiCli *webitel.Client) *SearchEngine {
 	h := &SearchEngine{
-		svc: svc,
+		svc:    svc,
+		client: apiCli,
 	}
 	pb.RegisterFTSServiceServer(s, h)
 	return h
 }
 
 func (h *SearchEngine) Search(ctx context.Context, in *pb.SearchRequest) (*pb.SearchResponse, error) {
-	items, next, err := h.svc.Search(ctx, &model.SignedInUser{
-		DomainId: 1,
-	}, &model.SearchQuery{
+	session := grpc.SessionFromContext(ctx)
+
+	items, next, err := h.svc.Search(ctx, &session, &model.SearchQuery{
 		Q:           in.GetQ(),
 		ObjectsName: in.GetObjectName(),
 		Limit:       int(in.GetLimit()),

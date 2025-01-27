@@ -5,6 +5,7 @@ import (
 )
 
 //go:generate go run github.com/bufbuild/buf/cmd/buf@latest generate --template buf.gen.yaml
+//go:generate go run github.com/bufbuild/buf/cmd/buf@latest generate --template buf.gen.webitel.yaml
 //go:generate go run github.com/google/wire/cmd/wire@latest gen ./cmd
 
 func main() {
