@@ -211,8 +211,9 @@ func (s *OpenSearch) Search(ctx context.Context, IndexName []string, text string
 	content := bytes.NewReader(data)
 
 	search := opensearchapi.SearchRequest{
-		Index: IndexName,
-		Body:  content,
+		Index:             IndexName,
+		Body:              content,
+		IgnoreUnavailable: opensearchapi.BoolPtr(true),
 	}
 
 	searchResponse, err := search.Do(ctx, s.cli)

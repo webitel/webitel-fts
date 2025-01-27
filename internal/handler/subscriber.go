@@ -78,7 +78,7 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 						continue
 					}
 
-					log := h.log.With(
+					rlog := h.log.With(
 						wlog.Any("id", m.Id),
 						wlog.String("object_name", m.ObjectName),
 						wlog.Int64("domain_id", m.DomainId),
@@ -92,14 +92,14 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 					case "delete":
 						err = h.DeleteRecord(m)
 					default:
-						log.Error("no handle routing key " + msg.RoutingKey)
+						rlog.Error("no handle routing key " + msg.RoutingKey)
 					}
 
 					if err == nil {
 						msg.Ack(true)
-						log.Debug("method " + msg.RoutingKey + " success")
+						rlog.Debug("method " + msg.RoutingKey + " success")
 					} else {
-						log.Error(err.Error(), wlog.Err(err))
+						rlog.Error(err.Error(), wlog.Err(err))
 					}
 
 				}

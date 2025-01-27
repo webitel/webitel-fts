@@ -13,7 +13,7 @@ import (
 )
 
 var wireAppResourceSet = wire.NewSet(
-	search, log, grpcSrv, pubsubConn,
+	search, log, grpcSrv, pubsubConn, setupCluster,
 )
 
 var wireAppHandlersSet = wire.NewSet(
@@ -26,7 +26,7 @@ var wireAppHandlersSet = wire.NewSet(
 
 func initAppResources(context.Context, *config.Config) (*resources, func(), error) {
 	wire.Build(wireAppResourceSet, wire.Struct(new(resources),
-		"search", "log", "grpcSrv", "pubsub"))
+		"search", "log", "grpcSrv", "pubsub", "cluster"))
 	return &resources{}, nil, nil
 }
 
@@ -72,9 +72,6 @@ var wireImportResourceSet = wire.NewSet(
 
 var wireImportHandlersSet = wire.NewSet(
 	handler.NewImport,
-	//store.NewManagement,
-	//service.NewManagement, wire.Bind(new(service.ManagementStore), new(*store.Management)),
-	//handler.NewManagement, wire.Bind(new(handler.ManagementService), new(*service.Management)),
 )
 
 func initImportResources(context.Context, *config.Config) (*resources, func(), error) {

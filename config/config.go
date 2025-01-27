@@ -3,6 +3,7 @@ package config
 type Service struct {
 	Id      string
 	Address string
+	Consul  string
 }
 
 type Pubsub struct {

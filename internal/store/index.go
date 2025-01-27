@@ -20,8 +20,11 @@ func NewIndexEngine(d searchengine.SearchEngine) *IndexEngine {
 
 func (s *IndexEngine) Search(ctx context.Context, domainId int64, in *model.SearchQuery) ([]*model.SearchResult, error) {
 	var idx []string
+
+	did := fmt.Sprintf("_%d", domainId)
+
 	for _, v := range in.ObjectsName {
-		idx = append(idx, fmt.Sprintf("%s_%d", v, domainId))
+		idx = append(idx, v+did)
 	}
 
 	if len(idx) == 0 {
@@ -37,7 +40,7 @@ func (s *IndexEngine) Search(ctx context.Context, domainId int64, in *model.Sear
 	for _, v := range result {
 		res = append(res, &model.SearchResult{
 			Id:         v.Id,
-			ObjectName: v.Index,
+			ObjectName: v.Index[:len(v.Index)-len(did)], // TODO
 			Text:       v.Text,
 		})
 	}

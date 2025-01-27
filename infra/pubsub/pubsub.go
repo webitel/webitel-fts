@@ -1,7 +1,6 @@
 package pubsub
 
 import (
-	"context"
 	"github.com/webitel/wlog"
 	"sync"
 	"time"
@@ -24,8 +23,6 @@ type Manager struct {
 	close          chan bool
 	waitConnection chan struct{}
 
-	ctxs *Contexts
-
 	runningFetches  sync.WaitGroup
 	runningHandlers sync.WaitGroup
 
@@ -38,7 +35,6 @@ func New(log *wlog.Logger, address string) (*Manager, error) {
 		log:             log,
 		close:           make(chan bool),
 		waitConnection:  make(chan struct{}),
-		ctxs:            NewContexts(context.Background()),
 		runningFetches:  sync.WaitGroup{},
 		runningHandlers: sync.WaitGroup{},
 	}
@@ -80,9 +76,6 @@ func (m *Manager) Shutdown() error {
 	go func() {
 		m.closeConn()
 	}()
-
-	// Immediately fetching new events.
-	m.ctxs.StopFetchingNewEvents()
 
 	m.runningFetches.Wait()
 

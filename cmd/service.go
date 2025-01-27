@@ -82,6 +82,15 @@ func apiCmd(cfg *config.Config) *cli.Command {
 func apiFlags(cfg *config.Config) []cli.Flag {
 	return []cli.Flag{
 		&cli.StringFlag{
+			Name:        "service-id",
+			Category:    "server",
+			Usage:       "service id ",
+			Value:       "1",
+			Destination: &cfg.Service.Id,
+			Aliases:     []string{"i"},
+			EnvVars:     []string{"ID"},
+		},
+		&cli.StringFlag{
 			Name:        "bind-address",
 			Category:    "server",
 			Usage:       "address that should be bound to for internal cluster communications",
@@ -89,6 +98,15 @@ func apiFlags(cfg *config.Config) []cli.Flag {
 			Destination: &cfg.Service.Address,
 			Aliases:     []string{"b"},
 			EnvVars:     []string{"BIND_ADDRESS"},
+		},
+		&cli.StringFlag{
+			Name:        "consul-discovery",
+			Category:    "server",
+			Usage:       "service discovery address",
+			Value:       "127.0.0.1:8500",
+			Destination: &cfg.Service.Consul,
+			Aliases:     []string{"c"},
+			EnvVars:     []string{"CONSUL"},
 		},
 		&cli.StringFlag{
 			Name:        "pubsub",

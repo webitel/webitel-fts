@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"github.com/webitel/webitel-fts/config"
+	"github.com/webitel/webitel-fts/infra/consul"
 	"github.com/webitel/webitel-fts/infra/grpc"
 	"github.com/webitel/webitel-fts/infra/pubsub"
 	"github.com/webitel/webitel-fts/infra/searchengine"
@@ -28,6 +29,7 @@ type resources struct {
 	grpcSrv *grpc.Server
 	pubsub  *pubsub.Manager
 	sql     sql.Store
+	cluster *consul.Cluster
 }
 
 func grpcSrv(cfg *config.Config, l *wlog.Logger) (*grpc.Server, func(), error) {
@@ -109,4 +111,17 @@ func setupSql(log *wlog.Logger, cfg *config.Config) (sql.Store, func(), error) {
 	return s, func() {
 		s.Close()
 	}, nil
+}
+
+func setupCluster(cfg *config.Config, srv *grpc.Server, l *wlog.Logger) (*consul.Cluster, func(), error) {
+	c := consul.NewCluster("fts", cfg.Service.Consul)
+	err := c.Start(cfg.Service.Id, srv.Host(), srv.Port())
+
+	if err != nil {
+		return nil, nil, err
+	}
+	return c, func() {
+		c.Stop()
+	}, nil
+
 }
