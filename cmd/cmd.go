@@ -21,6 +21,7 @@ var (
 	CommitDate = time.Now().UTC().String()
 
 	Branch = "branch"
+	Build  = "dev"
 )
 
 // Run the default command
@@ -30,7 +31,7 @@ func Run() error {
 	def := &cli.App{
 		Name:      "webitel-fts",
 		Usage:     "FTS in the Webitel",
-		Version:   fmt.Sprintf("%s, %s@%s at %s", version, Branch, Commit, CommitDate),
+		Version:   fmt.Sprintf("%s-%s, %s@%s at %s", version, Build, Branch, Commit, CommitDate),
 		Compiled:  time.Now(),
 		Copyright: "Webitel, 2024",
 		Action: func(c *cli.Context) error {
