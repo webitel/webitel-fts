@@ -17,10 +17,10 @@ var (
 	version = model.CurrentVersion
 
 	// commit is the git commit used to build the api.
-	commit     = "hash"
-	commitDate = time.Now().UTC().String()
+	Commit     = "hash"
+	CommitDate = time.Now().UTC().String()
 
-	branch = "branch"
+	Branch = "branch"
 )
 
 // Run the default command
@@ -30,7 +30,7 @@ func Run() error {
 	def := &cli.App{
 		Name:      "webitel-fts",
 		Usage:     "FTS in the Webitel",
-		Version:   fmt.Sprintf("%s, %s@%s at %s", version, branch, commit, commitDate),
+		Version:   fmt.Sprintf("%s, %s@%s at %s", version, Branch, Commit, CommitDate),
 		Compiled:  time.Now(),
 		Copyright: "Webitel, 2024",
 		Action: func(c *cli.Context) error {
