@@ -6,15 +6,18 @@ import (
 	"fmt"
 	"github.com/webitel/webitel-fts/infra/searchengine"
 	"github.com/webitel/webitel-fts/internal/model"
+	"github.com/webitel/wlog"
 )
 
 type IndexEngine struct {
-	db searchengine.SearchEngine
+	log *wlog.Logger
+	db  searchengine.SearchEngine
 }
 
-func NewIndexEngine(d searchengine.SearchEngine) *IndexEngine {
+func NewIndexEngine(d searchengine.SearchEngine, log *wlog.Logger) *IndexEngine {
 	return &IndexEngine{
-		db: d,
+		db:  d,
+		log: log.With(wlog.String("scope", "index_store")),
 	}
 }
 
@@ -69,4 +72,8 @@ func (s *IndexEngine) Delete(ctx context.Context, msg model.Message) error {
 		fmt.Sprintf("%v", msg.Id),
 		fmt.Sprintf("%v_%v", msg.ObjectName, msg.DomainId),
 	)
+}
+
+func (s *IndexEngine) GetSupportObjectsName() ([]string, error) {
+	return s.db.GetTemplates(context.TODO())
 }

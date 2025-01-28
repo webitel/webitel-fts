@@ -15,6 +15,8 @@ import (
 	"time"
 )
 
+const templatePrefix = "wbt_"
+
 type OpenSearch struct {
 	cli *opensearch.Client
 }
@@ -135,7 +137,7 @@ func (s *OpenSearch) Template(ctx context.Context, name string, body []byte) err
 	document := bytes.NewReader(body)
 	req := opensearchapi.IndicesPutIndexTemplateRequest{
 		Body: document,
-		Name: name,
+		Name: templatePrefix + name,
 		//Create: opensearchapi.BoolPtr(true),
 	}
 	result, err := req.Do(ctx, s.cli)
@@ -150,6 +152,40 @@ func (s *OpenSearch) Template(ctx context.Context, name string, body []byte) err
 	}
 
 	return nil
+}
+
+type IndicesGetIndexTemplatesResponse struct {
+	IndexTemplates []struct {
+		Name string
+	} `json:"index_templates"`
+}
+
+func (s *OpenSearch) GetTemplates(ctx context.Context) ([]string, error) {
+	req := opensearchapi.IndicesGetIndexTemplateRequest{
+		Name: []string{templatePrefix + "*"},
+	}
+	result, err := req.Do(ctx, s.cli)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Body.Close()
+
+	body, _ := io.ReadAll(result.Body)
+	if result.IsError() {
+		return nil, errors.New(string(body))
+	}
+
+	var templates IndicesGetIndexTemplatesResponse
+
+	if err = json.Unmarshal(body, &templates); err != nil {
+		return nil, err
+	}
+	var res []string
+	for _, v := range templates.IndexTemplates {
+		res = append(res, v.Name[len(templatePrefix):])
+	}
+
+	return res, nil
 }
 
 type Highlight map[string][]string

@@ -95,5 +95,9 @@ func (c *Client) GetSession(ctx context.Context, token string) (*model.Session, 
 		})
 	}
 
+	for _, role := range res.Roles {
+		s.RoleIds = append(s.RoleIds, role.Id)
+	}
+
 	return s, nil
 }

@@ -17,16 +17,13 @@ func importCmd(cfg *config.Config) *cli.Command {
 		Usage:   "Import data",
 		Flags:   importFlags(cfg, &index),
 		Action: func(c *cli.Context) error {
-			q := `select c.id, c.dc,
-       c.about, c.given_name, c.middle_name, c.family_name,
-       c.common_name,
-       (select json_agg(p.number) phones
-        from contacts.contact_phone p
-        where p.contact_id = c.id),
-       (select json_agg(e.email) email
-        from contacts.contact_email e
-        where e.contact_id = c.id)
-from contacts.contact c`
+			q := `select id,
+       dc,
+       description,
+       array(select comment from "cases".case_comment cc where cc.case_id = c.id) internal_comments,
+       coalesce(close_result, '')                                                 close_result,
+       coalesce(rating_comment, '')                                               rating_comment
+from cases."case" c;`
 
 			colId := "id"
 			colDom := "dc"

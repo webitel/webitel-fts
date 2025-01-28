@@ -1,0 +1,58 @@
+[
+  {
+    "name": "cases",
+    "data": {
+      "index_patterns": [
+        "cases_*"
+      ],
+      "priority": 1,
+      "template": {
+        "settings": {
+          "index.max_ngram_diff": 7,
+          "analysis": {
+            "analyzer": {
+              "ngram_analyzer": {
+                "tokenizer": "ngram_tokenizer"
+              }
+            },
+            "tokenizer": {
+              "ngram_tokenizer": {
+                "type": "ngram",
+                "min_gram": 1,
+                "max_gram": 7,
+                "token_chars": [
+                  "letter",
+                  "digit"
+                ]
+              }
+            }
+          }
+        },
+        "mappings": {
+          "properties": {
+            "description": {
+              "type": "text",
+              "analyzer": "ngram_analyzer",
+              "search_analyzer": "standard"
+            },
+            "internal_comments": {
+              "type": "text",
+              "analyzer": "ngram_analyzer",
+              "search_analyzer": "standard"
+            },
+            "close_result": {
+              "type": "text",
+              "analyzer": "ngram_analyzer",
+              "search_analyzer": "standard"
+            },
+            "rating_comment": {
+              "type": "text",
+              "analyzer": "ngram_analyzer",
+              "search_analyzer": "standard"
+            }
+          }
+        }
+      }
+    }
+  }
+]

@@ -1,5 +1,7 @@
 package model
 
+import "strings"
+
 type SessionPermission struct {
 	Id     int64
 	Class  string
@@ -15,4 +17,22 @@ type Session struct {
 	Expire   int64               `json:"expire"`
 	UserId   int64               `json:"user_id"`
 	Scopes   []SessionPermission `json:"scopes"`
+	RoleIds  []int64             `json:"role_ids"`
+}
+
+func (s *Session) ObjectPermission(name string) *SessionPermission {
+	for _, v := range s.Scopes {
+		if v.Class == name {
+			return &v
+		}
+	}
+	return nil
+}
+
+func (sp *SessionPermission) HasRead() bool {
+	// TODO
+	if !sp.Obac || strings.Index(sp.Access, "r") > -1 {
+		return true
+	}
+	return false
 }

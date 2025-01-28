@@ -10,6 +10,7 @@ type SearchEngine interface {
 	Update(ctx context.Context, id string, index string, body []byte) error
 	Delete(ctx context.Context, id string, index string) error
 
+	GetTemplates(ctx context.Context) ([]string, error)
 	Template(ctx context.Context, name string, body []byte) error
 
 	Search(ctx context.Context, IndexName []string, text string, limit int) ([]SearchResult, error)
