@@ -70,6 +70,7 @@ func apiCmd(cfg *config.Config) *cli.Command {
 				}
 			}()
 			if err != nil {
+				wlog.Error(err.Error(), wlog.Err(err))
 				return err
 			}
 			signal.Notify(interruptChan, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
