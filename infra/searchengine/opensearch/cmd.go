@@ -15,6 +15,7 @@ func Flags(cfg *config.Config) []cli.Flag {
 			Usage:       "OpenSearch list of nodes to use.",
 			EnvVars:     []string{"OPENSEARCH_ADDR"},
 			Value:       "https://localhost:9200",
+			Aliases:     []string{"oh"},
 			Destination: &cfg.OpenSearchConfig.Addresses,
 		},
 		&cli.StringFlag{
@@ -23,6 +24,7 @@ func Flags(cfg *config.Config) []cli.Flag {
 			Usage:       "OpenSearch username for HTTP Basic Authentication.",
 			EnvVars:     []string{"OPENSEARCH_USER"},
 			Value:       "admin",
+			Aliases:     []string{"ou"},
 			Destination: &cfg.OpenSearchConfig.Username,
 		},
 		&cli.StringFlag{
@@ -31,6 +33,7 @@ func Flags(cfg *config.Config) []cli.Flag {
 			Usage:       "OpenSearch password for HTTP Basic Authentication.",
 			EnvVars:     []string{"OPENSEARCH_PASS"},
 			Value:       "admin",
+			Aliases:     []string{"op"},
 			Destination: &cfg.OpenSearchConfig.Password,
 		},
 	}

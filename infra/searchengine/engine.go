@@ -13,7 +13,7 @@ type SearchEngine interface {
 	GetTemplates(ctx context.Context) ([]string, error)
 	Template(ctx context.Context, name string, body []byte) error
 
-	Search(ctx context.Context, IndexName []string, text string, limit int) ([]SearchResult, error)
+	Search(ctx context.Context, IndexName []string, text string, size int) ([]SearchResult, error)
 }
 
 type SearchResult struct {

@@ -205,10 +205,10 @@ type Response struct {
 	Hits ResponseHits `json:"hits"`
 }
 
-func (s *OpenSearch) Search(ctx context.Context, IndexName []string, text string, limit int) ([]searchengine.SearchResult, error) {
+func (s *OpenSearch) Search(ctx context.Context, IndexName []string, text string, size int) ([]searchengine.SearchResult, error) {
 
 	q := map[string]any{
-		"size": limit,
+		"size": size,
 		"sort": []map[string]any{
 			{
 				"_score": map[string]any{

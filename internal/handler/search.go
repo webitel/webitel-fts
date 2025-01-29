@@ -34,7 +34,7 @@ func (h *SearchEngine) Search(ctx context.Context, in *pb.SearchRequest) (*pb.Se
 	items, next, err := h.svc.Search(ctx, &session, &model.SearchQuery{
 		Q:           in.GetQ(),
 		ObjectsName: in.GetObjectName(),
-		Limit:       int(in.GetLimit()),
+		Limit:       int(in.GetSize()),
 	})
 
 	if err != nil {
