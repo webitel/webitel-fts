@@ -1,9 +1,9 @@
 [
   {
-    "name": "cases",
+    "name": "case_comments",
     "data": {
       "index_patterns": [
-        "cases_*"
+        "case_comments_*"
       ],
       "priority": 1,
       "template": {
@@ -30,20 +30,13 @@
         },
         "mappings": {
           "properties": {
-            "description": {
+            "comment": {
               "type": "text",
               "analyzer": "ngram_analyzer",
               "search_analyzer": "standard"
             },
-            "close_result": {
-              "type": "text",
-              "analyzer": "ngram_analyzer",
-              "search_analyzer": "standard"
-            },
-            "rating_comment": {
-              "type": "text",
-              "analyzer": "ngram_analyzer",
-              "search_analyzer": "standard"
+            "parent_id": {
+              "type": "long"
             }
           }
         }
