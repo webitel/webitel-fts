@@ -275,6 +275,7 @@ func (s *OpenSearch) Search(ctx context.Context, IndexName []string, text string
 
 	for _, v := range res.Hits.Hits {
 		t := ""
+		id := v.Id
 		if len(v.Highlight) != 0 {
 			for k, v := range v.Highlight {
 				t += fmt.Sprintf("%s: %v", k, v[0])
@@ -287,9 +288,15 @@ func (s *OpenSearch) Search(ctx context.Context, IndexName []string, text string
 				t = "TODO"
 			}
 		}
+
+		// TODO
+		if _id, ok := v.Source["parent_id"]; ok {
+			id = fmt.Sprintf("%v", _id)
+		}
+
 		response = append(response, searchengine.SearchResult{
 			Index: v.Index,
-			Id:    v.Id,
+			Id:    id,
 			Text:  t,
 		})
 	}
