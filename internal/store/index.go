@@ -22,12 +22,15 @@ func NewIndexEngine(d searchengine.SearchEngine, log *wlog.Logger) *IndexEngine 
 }
 
 func (s *IndexEngine) Search(ctx context.Context, domainId int64, in *model.SearchQuery) ([]*model.SearchResult, error) {
-	var idx []string
+	var idx []searchengine.IndexSettings
 
 	did := fmt.Sprintf("_%d", domainId)
 
 	for _, v := range in.ObjectsName {
-		idx = append(idx, v+did)
+		idx = append(idx, searchengine.IndexSettings{
+			Name:          v.Name + did,
+			AccessRoleIds: v.RoleIds,
+		})
 	}
 
 	if len(idx) == 0 {

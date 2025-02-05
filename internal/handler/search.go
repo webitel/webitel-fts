@@ -31,11 +31,18 @@ func NewSearchEngine(svc SearchEngineService, s *grpc.Server, apiCli *webitel.Cl
 func (h *SearchEngine) Search(ctx context.Context, in *pb.SearchRequest) (*pb.SearchResponse, error) {
 	session := grpc.SessionFromContext(ctx)
 
-	items, next, err := h.svc.Search(ctx, &session, &model.SearchQuery{
+	q := &model.SearchQuery{
 		Q:           in.GetQ(),
-		ObjectsName: in.GetObjectName(),
+		ObjectsName: nil,
 		Limit:       int(in.GetSize()),
-	})
+	}
+	for _, v := range in.GetObjectName() {
+		q.ObjectsName = append(q.ObjectsName, model.ObjectName{
+			Name: v,
+		})
+	}
+
+	items, next, err := h.svc.Search(ctx, &session, q)
 
 	if err != nil {
 		return nil, err

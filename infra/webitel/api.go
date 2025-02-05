@@ -36,7 +36,7 @@ func NewClient(consulTarget string, log *wlog.Logger) (*Client, error) {
 
 	return &Client{
 		auth:         api.NewAuthClient(authConn),
-		sessionCache: expirable.NewLRU[string, *model.Session](10000, nil, time.Second*30), // TODO config
+		sessionCache: expirable.NewLRU[string, *model.Session](10000, nil, time.Second*10), // TODO config
 	}, nil
 }
 

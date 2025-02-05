@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/webitel/webitel-fts/internal/model"
 	"github.com/webitel/wlog"
-	"slices"
 	"strings"
 )
 
@@ -57,21 +56,26 @@ func (s *IndexEngine) Search(ctx context.Context, session *model.Session, search
 	search.Limit++
 	next := false
 
-	allowObjects := Filter(s.objects, func(e string) bool {
-		p := session.ObjectPermission(e)
-		if p != nil {
-			return p.HasRead()
+	var allowObjects []model.ObjectName
+	sq := len(search.ObjectsName)
+
+	for _, v := range s.objects {
+		if sq != 0 && !search.HasObject(v) {
+			continue
 		}
-		return false
-	})
-
-	if len(search.ObjectsName) == 0 {
-		search.ObjectsName = append([]string{}, allowObjects...)
+		p := session.ObjectPermission(v)
+		if p != nil && p.HasRead() {
+			a := model.ObjectName{
+				Name:    v,
+				RoleIds: nil,
+			}
+			if p.Rbac {
+				a.RoleIds = session.RoleIds
+			}
+			allowObjects = append(allowObjects, a)
+		}
 	}
-
-	search.ObjectsName = Filter(search.ObjectsName, func(e string) bool {
-		return slices.Contains(allowObjects, e)
-	})
+	search.ObjectsName = allowObjects
 
 	res, err := s.store.Search(ctx, session.DomainId, search)
 	if err != nil {
@@ -84,14 +88,4 @@ func (s *IndexEngine) Search(ctx context.Context, session *model.Session, search
 	}
 
 	return res, next, nil
-}
-
-func Filter[E any](s []E, f func(E) bool) []E {
-	s2 := make([]E, 0, len(s))
-	for _, e := range s {
-		if f(e) {
-			s2 = append(s2, e)
-		}
-	}
-	return s2
 }

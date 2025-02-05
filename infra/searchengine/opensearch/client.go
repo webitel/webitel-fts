@@ -205,7 +205,43 @@ type Response struct {
 	Hits ResponseHits `json:"hits"`
 }
 
-func (s *OpenSearch) Search(ctx context.Context, IndexName []string, text string, size int) ([]searchengine.SearchResult, error) {
+type Should struct {
+	Bool any `json:"bool,omitempty"`
+}
+
+func (s *OpenSearch) Search(ctx context.Context, indexes []searchengine.IndexSettings, text string, size int) ([]searchengine.SearchResult, error) {
+	idx := make([]string, 0, len(indexes))
+
+	var should []Should
+
+	for _, v := range indexes {
+		idx = append(idx, v.Name)
+		must := []map[string]any{
+			{
+				"term": map[string]string{
+					"_index": v.Name,
+				},
+			},
+			{
+				"query_string": map[string]any{
+					"query": text,
+				},
+			},
+		}
+
+		if v.AccessRoleIds != nil {
+			must = append(must, map[string]any{
+				"terms": map[string][]int64{
+					"_role_ids": v.AccessRoleIds,
+				},
+			})
+		}
+		should = append(should, Should{
+			Bool: map[string]any{
+				"must": must,
+			},
+		})
+	}
 
 	q := map[string]any{
 		"size": size,
@@ -228,16 +264,11 @@ func (s *OpenSearch) Search(ctx context.Context, IndexName []string, text string
 		"stored_fields": []string{"*"},
 		"query": map[string]any{
 			"bool": map[string]any{
-				"filter": []map[string]any{
-					{
-						"query_string": map[string]any{
-							"query": text,
-						},
-					},
-				},
+				"should": should,
 			},
 		},
 	}
+
 	data, err := json.Marshal(q)
 	if err != nil {
 		return nil, err
@@ -247,7 +278,7 @@ func (s *OpenSearch) Search(ctx context.Context, IndexName []string, text string
 	content := bytes.NewReader(data)
 
 	search := opensearchapi.SearchRequest{
-		Index:             IndexName,
+		Index:             idx,
 		Body:              content,
 		IgnoreUnavailable: opensearchapi.BoolPtr(true),
 	}

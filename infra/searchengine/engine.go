@@ -13,7 +13,7 @@ type SearchEngine interface {
 	GetTemplates(ctx context.Context) ([]string, error)
 	Template(ctx context.Context, name string, body []byte) error
 
-	Search(ctx context.Context, IndexName []string, text string, size int) ([]SearchResult, error)
+	Search(ctx context.Context, IndexName []IndexSettings, text string, size int) ([]SearchResult, error)
 }
 
 type SearchResult struct {
@@ -21,4 +21,9 @@ type SearchResult struct {
 	Id     string
 	Text   string
 	Source map[string]any `json:"_source"`
+}
+
+type IndexSettings struct {
+	Name          string
+	AccessRoleIds []int64
 }
