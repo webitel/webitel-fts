@@ -64,12 +64,14 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 						return
 					}
 
+					/* TODO
 					if msg.ContentType != "text/json" {
 						h.log.Warn("don't support context type "+msg.ContentType,
 							wlog.String("content-type", msg.ContentType),
 						)
 						continue
 					}
+					*/
 
 					var m model.Message
 					err = json.Unmarshal(msg.Body, &m)
