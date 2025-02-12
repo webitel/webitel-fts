@@ -21,15 +21,20 @@ type OpenSearch struct {
 	cli *opensearch.Client
 }
 
-func New(hosts []string, username, password string) (*OpenSearch, error) {
-	client, err := opensearch.NewClient(opensearch.Config{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		},
+func New(hosts []string, username, password string, insecure bool) (*OpenSearch, error) {
+	cfg := opensearch.Config{
 		Addresses: hosts,
 		Username:  username,
 		Password:  password,
-	})
+	}
+
+	if insecure {
+		cfg.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+	}
+
+	client, err := opensearch.NewClient(cfg)
 
 	if err != nil {
 		return nil, err

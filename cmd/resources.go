@@ -51,6 +51,7 @@ func search(cfg *config.Config, l *wlog.Logger) (searchengine.SearchEngine, func
 	s, err := opensearch.New(strings.Split(cfg.OpenSearchConfig.Addresses, ","),
 		cfg.OpenSearchConfig.Username,
 		cfg.OpenSearchConfig.Password,
+		cfg.OpenSearchConfig.Insecure,
 	)
 
 	if err != nil {

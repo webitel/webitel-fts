@@ -14,6 +14,7 @@ type OpenSearchConfig struct {
 	Addresses string
 	Username  string
 	Password  string
+	Insecure  bool
 }
 
 type LogSettings struct {

@@ -36,5 +36,14 @@ func Flags(cfg *config.Config) []cli.Flag {
 			Aliases:     []string{"op"},
 			Destination: &cfg.OpenSearchConfig.Password,
 		},
+		&cli.BoolFlag{
+			Name:        "opensearch-insecure",
+			Category:    category,
+			Usage:       "OpenSearch insecure transport.",
+			EnvVars:     []string{"OPENSEARCH_INSECURE"},
+			Value:       true,
+			Aliases:     []string{"oi"},
+			Destination: &cfg.OpenSearchConfig.Insecure,
+		},
 	}
 }
