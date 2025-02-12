@@ -209,7 +209,7 @@ type Should struct {
 	Bool any `json:"bool,omitempty"`
 }
 
-func (s *OpenSearch) Search(ctx context.Context, indexes []searchengine.IndexSettings, text string, size int) ([]searchengine.SearchResult, error) {
+func (s *OpenSearch) Search(ctx context.Context, indexes []searchengine.IndexSettings, text string, size, from int) ([]searchengine.SearchResult, error) {
 	idx := make([]string, 0, len(indexes))
 
 	var should []Should
@@ -245,9 +245,15 @@ func (s *OpenSearch) Search(ctx context.Context, indexes []searchengine.IndexSet
 
 	q := map[string]any{
 		"size": size,
+		"from": from,
 		"sort": []map[string]any{
 			{
 				"_score": map[string]any{
+					"order": "desc",
+				},
+			},
+			{
+				"_id": map[string]any{
 					"order": "desc",
 				},
 			},

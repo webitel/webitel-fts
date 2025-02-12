@@ -35,6 +35,7 @@ func (h *SearchEngine) Search(ctx context.Context, in *pb.SearchRequest) (*pb.Se
 		Q:           in.GetQ(),
 		ObjectsName: nil,
 		Limit:       int(in.GetSize()),
+		Page:        int(in.GetPage()),
 	}
 	for _, v := range in.GetObjectName() {
 		q.ObjectsName = append(q.ObjectsName, model.ObjectName{

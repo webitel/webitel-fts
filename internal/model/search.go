@@ -14,6 +14,7 @@ type ObjectName struct {
 type SearchQuery struct {
 	DomainId    int64
 	Limit       int
+	Page        int
 	Q           string
 	ObjectsName []ObjectName
 }

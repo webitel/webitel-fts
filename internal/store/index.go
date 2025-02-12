@@ -37,7 +37,7 @@ func (s *IndexEngine) Search(ctx context.Context, domainId int64, in *model.Sear
 		return nil, errors.New("scope is required")
 	}
 
-	result, err := s.db.Search(ctx, idx, in.Q, in.Limit)
+	result, err := s.db.Search(ctx, idx, in.Q, in.Limit, in.Limit*(in.Page-1))
 	if err != nil {
 		return nil, err
 	}
