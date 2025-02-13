@@ -20,10 +20,17 @@ func importCmd(cfg *config.Config) *cli.Command {
 			q := `select id,
        dc,
        description,
-       array(select comment from "cases".case_comment cc where cc.case_id = c.id) internal_comments,
        coalesce(close_result, '')                                                 close_result,
-       coalesce(rating_comment, '')                                               rating_comment
+       coalesce(rating_comment, '')                                               rating_comment,
+       coalesce(subject, '') subject,
+       contact_info,
+       (extract(epoch from created_at) * 1000)::int8 created_at
 from cases."case" c;`
+
+			/*
+				select comment, c.dc, c.case_id as parent_id, c.id,  (extract(epoch from created_at) * 1000)::int8 created_at
+				from "cases".case_comment c;
+			*/
 
 			colId := "id"
 			colDom := "dc"

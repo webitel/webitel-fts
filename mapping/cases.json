@@ -44,6 +44,16 @@
               "type": "text",
               "analyzer": "ngram_analyzer",
               "search_analyzer": "standard"
+            },
+            "subject": {
+              "type": "text",
+              "analyzer": "ngram_analyzer",
+              "search_analyzer": "standard"
+            },
+            "contact_info": {
+              "type": "text",
+              "analyzer": "ngram_analyzer",
+              "search_analyzer": "standard"
             }
           }
         }
