@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"github.com/urfave/cli/v2"
 	"github.com/webitel/webitel-fts/config"
 	"github.com/webitel/wlog"
@@ -41,7 +42,7 @@ func (a *App) Run() (func(), error) {
 	}
 
 	a.eg.Go(func() error {
-		a.log.Debug("listen grpc " + r.grpcSrv.Addr)
+		a.log.Debug(fmt.Sprintf("listen grpc %s:%d", r.grpcSrv.Host(), r.grpcSrv.Port()))
 		return r.grpcSrv.Listen()
 	})
 
