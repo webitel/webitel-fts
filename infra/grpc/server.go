@@ -24,15 +24,19 @@ func New(addr string, log *wlog.Logger, api *webitel.Client) (*Server, error) {
 		authUnaryInterceptor(api),
 	))
 
-	h, p, err := net.SplitHostPort(addr)
+	l, err := net.Listen("tcp", addr)
+	if err != nil {
+		return nil, err
+	}
+
+	h, p, err := net.SplitHostPort(l.Addr().String())
 	if err != nil {
 		return nil, err
 	}
 	port, _ := strconv.Atoi(p)
 
-	l, err := net.Listen("tcp", addr)
-	if err != nil {
-		return nil, err
+	if h == "::" {
+		h = publicAddr()
 	}
 
 	return &Server{
@@ -62,4 +66,43 @@ func (s *Server) Host() string {
 
 func (s *Server) Port() int {
 	return s.port
+}
+
+func publicAddr() string {
+	ifaces, err := net.Interfaces()
+
+	if err != nil {
+		return ""
+	}
+	for _, i := range ifaces {
+		addrs, err := i.Addrs()
+		if err != nil {
+			continue
+		}
+
+		for _, addr := range addrs {
+			var ip net.IP
+			switch v := addr.(type) {
+			case *net.IPNet:
+				ip = v.IP
+			case *net.IPAddr:
+				ip = v.IP
+			default:
+				continue
+			}
+
+			if isPublicIP(ip) {
+				return ip.String()
+			}
+			// process IP address
+		}
+	}
+	return ""
+}
+
+func isPublicIP(IP net.IP) bool {
+	if IP.IsLoopback() || IP.IsLinkLocalMulticast() || IP.IsLinkLocalUnicast() {
+		return false
+	}
+	return true
 }

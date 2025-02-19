@@ -95,7 +95,7 @@ func apiFlags(cfg *config.Config) []cli.Flag {
 			Name:        "bind-address",
 			Category:    "server",
 			Usage:       "address that should be bound to for internal cluster communications",
-			Value:       "127.0.0.1:10011",
+			Value:       ":10011",
 			Destination: &cfg.Service.Address,
 			Aliases:     []string{"b"},
 			EnvVars:     []string{"BIND_ADDRESS"},
