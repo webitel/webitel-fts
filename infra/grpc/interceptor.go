@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/webitel/webitel-fts/infra/webitel"
 	"github.com/webitel/webitel-fts/internal/model"
@@ -10,7 +11,10 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	otelCodes "go.opentelemetry.io/otel/codes"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -19,6 +23,35 @@ const hdrTokenAccess = "X-Webitel-Access"
 const requestContextName = "grpc_ctx"
 
 type grpcSessionKey struct {
+}
+
+type ApiErr struct {
+	Id            string
+	Code          int
+	Status        string `json:"status"` // Message to be display to the end user without debugging information
+	DetailedError string `json:"detail"` // Internal error string to help the developer
+}
+
+func internalErr(err error) string {
+	a := ApiErr{
+		Id:            "fts.app.err",
+		Code:          http.StatusInternalServerError,
+		Status:        "",
+		DetailedError: err.Error(),
+	}
+	s, _ := json.Marshal(a)
+	return string(s)
+}
+
+func authErr(err error) string {
+	a := ApiErr{
+		Id:            "fts.auth.err",
+		Code:          http.StatusForbidden,
+		Status:        "",
+		DetailedError: err.Error(),
+	}
+	s, _ := json.Marshal(a)
+	return string(s)
 }
 
 func authUnaryInterceptor(logger *wlog.Logger, api *webitel.Client) grpc.UnaryServerInterceptor {
@@ -33,13 +66,17 @@ func authUnaryInterceptor(logger *wlog.Logger, api *webitel.Client) grpc.UnarySe
 
 		start := time.Now()
 		md, token, err := tokenFromContext(ctx)
-		if err != nil {
-			logger.Error(err.Error(), wlog.Err(err))
-			return nil, err
-		}
-
 		if md == nil {
 			md = metadata.MD{}
+		}
+		ip := getClientIp(md)
+
+		if err != nil {
+			logger.Error(err.Error(),
+				wlog.Err(err),
+				wlog.String("ip_address", ip),
+			)
+			return nil, status.Error(codes.PermissionDenied, authErr(err))
 		}
 
 		propagators := otel.GetTextMapPropagator()
@@ -53,7 +90,6 @@ func authUnaryInterceptor(logger *wlog.Logger, api *webitel.Client) grpc.UnarySe
 		}()
 
 		session, err = api.CachedSession(spanCtx, token)
-		ip := getClientIp(md)
 		span.SetAttributes(
 			attribute.Int64("domain_id", session.DomainId),
 			attribute.Int64("user_id", session.UserId),
@@ -63,8 +99,11 @@ func authUnaryInterceptor(logger *wlog.Logger, api *webitel.Client) grpc.UnarySe
 
 		if err != nil {
 			span.SetStatus(otelCodes.Error, err.Error())
-			logger.Error(err.Error(), wlog.Err(err))
-			return nil, err
+			logger.Error(err.Error(),
+				wlog.Err(err),
+				wlog.String("ip_address", ip),
+			)
+			return nil, status.Error(codes.PermissionDenied, authErr(err))
 		}
 
 		log := logger.With(wlog.Namespace("context"),
@@ -78,13 +117,14 @@ func authUnaryInterceptor(logger *wlog.Logger, api *webitel.Client) grpc.UnarySe
 		if err != nil {
 			span.SetStatus(otelCodes.Error, err.Error())
 			log.Error(err.Error(), wlog.Float64("duration_ms", float64(time.Since(start).Microseconds())/float64(1000)))
-			return nil, err
+			return nil, status.Error(codes.Internal, internalErr(err))
 		} else {
 			span.SetStatus(otelCodes.Ok, "success")
-			log.Debug("200", wlog.Float64("duration_ms", float64(time.Since(start).Microseconds())/float64(1000)))
+			log.Debug(strings.Join(md.Get("url"), ","),
+				wlog.Float64("duration_ms", float64(time.Since(start).Microseconds())/float64(1000)))
 		}
 
-		return res, err
+		return res, nil
 	}
 }
 
