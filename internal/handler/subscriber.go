@@ -84,6 +84,8 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 						wlog.Any("id", m.Id),
 						wlog.String("object_name", m.ObjectName),
 						wlog.Int64("domain_id", m.DomainId),
+						wlog.String("action", msg.RoutingKey),
+						wlog.Any(m.ObjectName, m.Body),
 					)
 
 					switch msg.RoutingKey {
