@@ -35,8 +35,17 @@ type Config struct {
 	OpenSearchConfig OpenSearchConfig
 	Pubsub           Pubsub
 	SqlSettings      SqlSettings
+	Import           ImportConfig
 }
 
 type SetupConfig struct {
 	Template string
+}
+
+type ImportConfig struct {
+	Index       string
+	Query       string
+	File        string
+	ColDomainId string
+	ColId       string
 }
