@@ -13,8 +13,20 @@ import (
 	"github.com/webitel/webitel-fts/infra/webitel"
 	"github.com/webitel/webitel-fts/internal/handler"
 	"github.com/webitel/webitel-fts/internal/model"
+	otelsdk "github.com/webitel/webitel-go-kit/otel/sdk"
 	"github.com/webitel/wlog"
+	"go.opentelemetry.io/otel/sdk/resource"
 	"strings"
+
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
+
+	// -------------------- plugin(s) -------------------- //
+	_ "github.com/webitel/webitel-go-kit/otel/sdk/log/otlp"
+	_ "github.com/webitel/webitel-go-kit/otel/sdk/log/stdout"
+	_ "github.com/webitel/webitel-go-kit/otel/sdk/metric/otlp"
+	_ "github.com/webitel/webitel-go-kit/otel/sdk/metric/stdout"
+	_ "github.com/webitel/webitel-go-kit/otel/sdk/trace/otlp"
+	_ "github.com/webitel/webitel-go-kit/otel/sdk/trace/stdout"
 )
 
 type handlers struct {
@@ -98,12 +110,42 @@ func log(cfg *config.Config) (*wlog.Logger, func(), error) {
 		logConfig.FileLevel = logSettings.Lvl
 	}
 
+	var otelShutdownFunc otelsdk.ShutdownFunc
+	ctx, cancel := context.WithCancel(context.Background())
+
+	exit := func() {
+		if otelShutdownFunc != nil {
+			err := otelShutdownFunc(ctx)
+			if err != nil {
+				wlog.Error(err.Error(), wlog.Err(err))
+			}
+		}
+		cancel()
+	}
+
+	if logSettings.Otel {
+		// TODO
+		var err error
+		logConfig.EnableExport = true
+		otelShutdownFunc, err = otelsdk.Configure(
+			ctx,
+			otelsdk.WithResource(resource.NewSchemaless(
+				semconv.ServiceName(model.ServiceName),
+				semconv.ServiceVersion(model.CurrentVersion),
+				semconv.ServiceInstanceID(cfg.Service.Id),
+				semconv.ServiceNamespace("webitel"),
+			)),
+		)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+
 	l := wlog.NewLogger(logConfig)
+	wlog.RedirectStdLog(l)
 	wlog.InitGlobalLogger(l)
 
-	return l, func() {
-		// TODO sync otel
-	}, nil
+	return l, exit, nil
 }
 
 func setupSql(log *wlog.Logger, cfg *config.Config) (sql.Store, func(), error) {
@@ -113,11 +155,14 @@ func setupSql(log *wlog.Logger, cfg *config.Config) (sql.Store, func(), error) {
 	}
 
 	return s, func() {
-		s.Close()
+		err = s.Close()
+		if err != nil {
+			wlog.Error(err.Error(), wlog.Err(err))
+		}
 	}, nil
 }
 
-func setupCluster(cfg *config.Config, srv *grpc.Server, l *wlog.Logger) (*consul.Cluster, func(), error) {
+func setupCluster(cfg *config.Config, srv *grpc.Server) (*consul.Cluster, func(), error) {
 	c := consul.NewCluster(model.ServiceName, cfg.Service.Consul)
 	err := c.Start(cfg.Service.Id, srv.Host(), srv.Port())
 
@@ -137,7 +182,10 @@ func setupApiClient(cfg *config.Config, l *wlog.Logger) (*webitel.Client, func()
 	}
 
 	return c, func() {
-		c.Close()
+		err = c.Close()
+		if err != nil {
+			wlog.Error(err.Error(), wlog.Err(err))
+		}
 	}, nil
 
 }
