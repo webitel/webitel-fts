@@ -21,7 +21,7 @@ type Server struct {
 func New(addr string, log *wlog.Logger, api *webitel.Client) (*Server, error) {
 
 	s := grpc.NewServer(grpc.ChainUnaryInterceptor(
-		authUnaryInterceptor(api),
+		authUnaryInterceptor(log.With(wlog.String("scope", "grpc")), api),
 	))
 
 	l, err := net.Listen("tcp", addr)
