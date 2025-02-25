@@ -130,7 +130,7 @@ func (s *OpenSearch) Delete(ctx context.Context, id string, index string) error 
 	}
 	defer deleteResponse.Body.Close()
 
-	if deleteResponse.IsError() {
+	if deleteResponse.IsError() && deleteResponse.StatusCode != http.StatusNotFound {
 		res, _ := io.ReadAll(deleteResponse.Body)
 		return errors.New(string(res))
 	}
