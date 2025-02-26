@@ -188,12 +188,12 @@ func (r *Channel) ConsumeQueue(queue string, autoAck bool) (Delivery, error) {
 	)
 }
 
-func (r *Channel) BindQueue(queue, key, exchange string, args amqp.Table) error {
+func (r *Channel) BindQueue(queue, key, exchange string, args Headers) error {
 	return r.channel.QueueBind(
-		queue,    // name
-		key,      // key
-		exchange, // exchange
-		false,    // noWait
-		args,     // args
+		queue,            // name
+		key,              // key
+		exchange,         // exchange
+		false,            // noWait
+		amqp.Table(args), // args
 	)
 }
