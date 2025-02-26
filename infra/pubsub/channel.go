@@ -17,7 +17,8 @@ const (
 	ExchangeTypeDirect MQExchangeType = "direct"
 )
 
-type Message = amqp.Delivery
+type Headers amqp.Table
+type Delivery <-chan amqp.Delivery
 
 // Exchange is the rabbitmq exchange.
 type Exchange struct {
@@ -139,26 +140,26 @@ func (r *Channel) DeclareDurableExchange(ex Exchange) error {
 	)
 }
 
-func (r *Channel) DeclareQueue(queue string, args amqp.Table) error {
+func (r *Channel) DeclareQueue(queue string, args Headers) error {
 	_, err := r.channel.QueueDeclare(
-		queue, // name
-		false, // durable
-		true,  // autoDelete
-		false, // exclusive
-		false, // noWait
-		args,  // args
+		queue,            // name
+		false,            // durable
+		true,             // autoDelete
+		false,            // exclusive
+		false,            // noWait
+		amqp.Table(args), // args
 	)
 	return err
 }
 
-func (r *Channel) DeclareDurableQueue(queue string, args amqp.Table) error {
+func (r *Channel) DeclareDurableQueue(queue string, args Headers) error {
 	_, err := r.channel.QueueDeclare(
-		queue, // name
-		true,  // durable
-		false, // autoDelete
-		false, // exclusive
-		false, // noWait
-		args,  // args
+		queue,            // name
+		true,             // durable
+		false,            // autoDelete
+		false,            // exclusive
+		false,            // noWait
+		amqp.Table(args), // args
 	)
 	return err
 }
@@ -175,7 +176,7 @@ func (r *Channel) DeclareReplyQueue(queue string) error {
 	return err
 }
 
-func (r *Channel) ConsumeQueue(queue string, autoAck bool) (<-chan amqp.Delivery, error) {
+func (r *Channel) ConsumeQueue(queue string, autoAck bool) (Delivery, error) {
 	return r.channel.Consume(
 		queue,   // queue
 		r.uuid,  // consumer
