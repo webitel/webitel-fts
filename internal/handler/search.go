@@ -43,6 +43,13 @@ func (h *SearchEngine) Search(ctx context.Context, in *pb.SearchRequest) (*pb.Se
 		})
 	}
 
+	if q.Limit < 1 {
+		q.Limit = 10
+	}
+	if q.Page < 1 {
+		q.Page = 1
+	}
+
 	items, next, err := h.svc.Search(ctx, &session, q)
 
 	if err != nil {
