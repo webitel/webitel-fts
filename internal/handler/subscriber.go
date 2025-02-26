@@ -100,6 +100,7 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 					err = json.Unmarshal(msg.Body, &m)
 					if err != nil {
 						h.log.Error(err.Error())
+						msg.Reject(false)
 						continue
 					}
 
