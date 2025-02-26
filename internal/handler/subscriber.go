@@ -4,16 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/webitel/webitel-fts/infra/pubsub"
-	"github.com/webitel/webitel-fts/internal/model"
+	"github.com/webitel/webitel-fts/pkg/client"
 	"github.com/webitel/wlog"
 )
 
 const XDLExpire = 86400000 * 7 // 7 days
 
 type SubscriberService interface {
-	Create(ctx context.Context, msg model.Message) error
-	Update(ctx context.Context, msg model.Message) error
-	Delete(ctx context.Context, msg model.Message) error
+	Create(ctx context.Context, msg client.Message) error
+	Update(ctx context.Context, msg client.Message) error
+	Delete(ctx context.Context, msg client.Message) error
 }
 
 type Subscriber struct {
@@ -65,13 +65,13 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 			return err
 		}
 
-		if err = channel.BindQueue(queueName, model.MessageCreate, exchange, nil); err != nil {
+		if err = channel.BindQueue(queueName, client.MessageCreate, exchange, nil); err != nil {
 			return err
 		}
-		if err = channel.BindQueue(queueName, model.MessageUpdate, exchange, nil); err != nil {
+		if err = channel.BindQueue(queueName, client.MessageUpdate, exchange, nil); err != nil {
 			return err
 		}
-		if err = channel.BindQueue(queueName, model.MessageDelete, exchange, nil); err != nil {
+		if err = channel.BindQueue(queueName, client.MessageDelete, exchange, nil); err != nil {
 			return err
 		}
 
@@ -98,7 +98,7 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 					}
 					*/
 
-					var m model.Message
+					var m client.Message
 					err = json.Unmarshal(msg.Body, &m)
 					if err != nil {
 						h.log.Error(err.Error())
@@ -115,11 +115,11 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 					)
 
 					switch msg.RoutingKey {
-					case model.MessageCreate:
+					case client.MessageCreate:
 						err = h.NewRecord(m)
-					case model.MessageUpdate:
+					case client.MessageUpdate:
 						err = h.UpdateRecord(m)
-					case model.MessageDelete:
+					case client.MessageDelete:
 						err = h.DeleteRecord(m)
 					default:
 						rlog.Error("no handle routing key " + msg.RoutingKey)
@@ -143,14 +143,14 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 	return h
 }
 
-func (s *Subscriber) NewRecord(msg model.Message) error {
+func (s *Subscriber) NewRecord(msg client.Message) error {
 	return s.svc.Create(context.TODO(), msg)
 }
 
-func (s *Subscriber) UpdateRecord(msg model.Message) error {
+func (s *Subscriber) UpdateRecord(msg client.Message) error {
 	return s.svc.Update(context.TODO(), msg)
 }
 
-func (s *Subscriber) DeleteRecord(msg model.Message) error {
+func (s *Subscriber) DeleteRecord(msg client.Message) error {
 	return s.svc.Delete(context.TODO(), msg)
 }

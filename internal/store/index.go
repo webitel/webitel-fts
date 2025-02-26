@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/webitel/webitel-fts/infra/searchengine"
 	"github.com/webitel/webitel-fts/internal/model"
+	"github.com/webitel/webitel-fts/pkg/client"
 	"github.com/webitel/wlog"
 )
 
@@ -54,7 +55,7 @@ func (s *IndexEngine) Search(ctx context.Context, domainId int64, in *model.Sear
 	return res, nil
 }
 
-func (s *IndexEngine) Create(ctx context.Context, msg model.Message) error {
+func (s *IndexEngine) Create(ctx context.Context, msg client.Message) error {
 	return s.db.Insert(ctx,
 		fmt.Sprintf("%v", msg.Id),
 		fmt.Sprintf("%v_%v", msg.ObjectName, msg.DomainId),
@@ -62,7 +63,7 @@ func (s *IndexEngine) Create(ctx context.Context, msg model.Message) error {
 	)
 }
 
-func (s *IndexEngine) Update(ctx context.Context, msg model.Message) error {
+func (s *IndexEngine) Update(ctx context.Context, msg client.Message) error {
 	return s.db.Update(ctx,
 		fmt.Sprintf("%v", msg.Id),
 		fmt.Sprintf("%v_%v", msg.ObjectName, msg.DomainId),
@@ -70,7 +71,7 @@ func (s *IndexEngine) Update(ctx context.Context, msg model.Message) error {
 	)
 }
 
-func (s *IndexEngine) Delete(ctx context.Context, msg model.Message) error {
+func (s *IndexEngine) Delete(ctx context.Context, msg client.Message) error {
 	return s.db.Delete(ctx,
 		fmt.Sprintf("%v", msg.Id),
 		fmt.Sprintf("%v_%v", msg.ObjectName, msg.DomainId),

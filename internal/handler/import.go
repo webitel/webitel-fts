@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/webitel/webitel-fts/infra/searchengine"
 	"github.com/webitel/webitel-fts/infra/sql"
-	"github.com/webitel/webitel-fts/internal/model"
+	"github.com/webitel/webitel-fts/pkg/client"
 	"github.com/webitel/wlog"
 )
 
@@ -44,7 +44,7 @@ func (i *ImportData) Import(ctx context.Context, q string, colId string, colDoma
 		if err = rows.Scan(colPtrs...); err != nil {
 			return err
 		}
-		msg := model.Message{
+		msg := client.Message{
 			Id:         "",
 			DomainId:   0,
 			ObjectName: objectName,
@@ -55,7 +55,7 @@ func (i *ImportData) Import(ctx context.Context, q string, colId string, colDoma
 		for i, col := range cols {
 			switch fields[i] {
 			case colId:
-				msg.Id = model.MessageId(fmt.Sprintf("%v", col))
+				msg.Id = client.MessageId(fmt.Sprintf("%v", col))
 			case colDomainId:
 				var ok bool
 				msg.DomainId, ok = col.(int64)
