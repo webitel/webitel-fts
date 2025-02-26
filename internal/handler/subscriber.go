@@ -8,6 +8,8 @@ import (
 	"github.com/webitel/wlog"
 )
 
+const XDLExpire = 86400000 * 7 // 7 days
+
 type SubscriberService interface {
 	Create(ctx context.Context, msg model.Message) error
 	Update(ctx context.Context, msg model.Message) error
@@ -47,11 +49,9 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 			return err
 		}
 
-		args := pubsub.Headers{
+		if err = channel.DeclareDurableQueue(queueName, pubsub.Headers{
 			"x-dead-letter-exchange": rejectExchange,
-		}
-
-		if err = channel.DeclareDurableQueue(queueName, args); err != nil {
+		}); err != nil {
 			return err
 		}
 
@@ -59,7 +59,9 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 			return err
 		}
 
-		if err = channel.BindQueue(rejectExchange, "#", rejectExchange, nil); err != nil {
+		if err = channel.BindQueue(rejectExchange, "#", rejectExchange, pubsub.Headers{
+			"x-expires": XDLExpire,
+		}); err != nil {
 			return err
 		}
 
