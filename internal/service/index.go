@@ -4,14 +4,15 @@ import (
 	"context"
 	"fmt"
 	"github.com/webitel/webitel-fts/internal/model"
+	"github.com/webitel/webitel-fts/pkg/client"
 	"github.com/webitel/wlog"
 	"strings"
 )
 
 type IndexEngineStore interface {
-	Create(ctx context.Context, msg model.Message) error
-	Update(ctx context.Context, msg model.Message) error
-	Delete(ctx context.Context, msg model.Message) error
+	Create(ctx context.Context, msg client.Message) error
+	Update(ctx context.Context, msg client.Message) error
+	Delete(ctx context.Context, msg client.Message) error
 	Search(ctx context.Context, domainId int64, in *model.SearchQuery) ([]*model.SearchResult, error)
 	GetSupportObjectsName() ([]string, error)
 }
@@ -40,15 +41,15 @@ func NewIndexEngine(log *wlog.Logger, s IndexEngineStore) *IndexEngine {
 	return i
 }
 
-func (s *IndexEngine) Create(ctx context.Context, msg model.Message) error {
+func (s *IndexEngine) Create(ctx context.Context, msg client.Message) error {
 	return s.store.Create(ctx, msg)
 }
 
-func (s *IndexEngine) Update(ctx context.Context, msg model.Message) error {
+func (s *IndexEngine) Update(ctx context.Context, msg client.Message) error {
 	return s.store.Update(ctx, msg)
 }
 
-func (s *IndexEngine) Delete(ctx context.Context, msg model.Message) error {
+func (s *IndexEngine) Delete(ctx context.Context, msg client.Message) error {
 	return s.store.Delete(ctx, msg)
 }
 

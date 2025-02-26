@@ -1,9 +1,5 @@
 package client
 
-import (
-	"github.com/webitel/webitel-fts/internal/model"
-)
-
 const exchange = "fts-stock"
 
 type Publisher interface {
@@ -21,28 +17,28 @@ func New(p Publisher) *Client {
 }
 
 func (c *Client) Create(domainId int64, objectName string, id any, row any) error {
-	msg, err := model.NewMessageJSON(domainId, objectName, id, row)
+	msg, err := NewMessageJSON(domainId, objectName, id, row)
 	if err != nil {
 		return err
 	}
 
-	return c.publisher.Send(exchange, model.MessageCreate, msg)
+	return c.publisher.Send(exchange, MessageCreate, msg)
 }
 
 func (c *Client) Update(domainId int64, objectName string, id any, row any) error {
-	msg, err := model.NewMessageJSON(domainId, objectName, id, row)
+	msg, err := NewMessageJSON(domainId, objectName, id, row)
 	if err != nil {
 		return err
 	}
 
-	return c.publisher.Send(exchange, model.MessageUpdate, msg)
+	return c.publisher.Send(exchange, MessageUpdate, msg)
 }
 
 func (c *Client) Delete(domainId int64, objectName string, id any) error {
-	msg, err := model.NewMessageJSON(domainId, objectName, id, nil)
+	msg, err := NewMessageJSON(domainId, objectName, id, nil)
 	if err != nil {
 		return err
 	}
 
-	return c.publisher.Send(exchange, model.MessageDelete, msg)
+	return c.publisher.Send(exchange, MessageDelete, msg)
 }
