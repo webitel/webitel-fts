@@ -26,6 +26,8 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 	}
 	p.AddOnConnect(func(channel *pubsub.Channel) error {
 		var err error
+		var delivery pubsub.Delivery
+		const rejectExchange = "fts-reject"
 		const exchange = "fts-stock"
 		const queueName = "fts-stock"
 
@@ -36,7 +38,28 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 		}); err != nil {
 			return err
 		}
-		if err = channel.DeclareDurableQueue(queueName, nil); err != nil {
+
+		if err = channel.DeclareExchange(pubsub.Exchange{
+			Name:    rejectExchange,
+			Type:    pubsub.ExchangeTypeTopic,
+			Durable: true,
+		}); err != nil {
+			return err
+		}
+
+		args := pubsub.Headers{
+			"x-dead-letter-exchange": rejectExchange,
+		}
+
+		if err = channel.DeclareDurableQueue(queueName, args); err != nil {
+			return err
+		}
+
+		if err = channel.DeclareDurableQueue(rejectExchange, nil); err != nil {
+			return err
+		}
+
+		if err = channel.BindQueue(rejectExchange, "#", rejectExchange, nil); err != nil {
 			return err
 		}
 
@@ -50,7 +73,7 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 			return err
 		}
 
-		ch, err := channel.ConsumeQueue(queueName, false)
+		delivery, err = channel.ConsumeQueue(queueName, false)
 		if err != nil {
 			return err
 		}
@@ -59,7 +82,7 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 			var err error
 			for {
 				select {
-				case msg, ok := <-ch:
+				case msg, ok := <-delivery:
 					if !ok {
 						return
 					}
@@ -103,6 +126,7 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 						msg.Ack(true)
 						rlog.Debug("method " + msg.RoutingKey + " success")
 					} else {
+						msg.Reject(false)
 						rlog.Error(err.Error(), wlog.Err(err))
 					}
 
