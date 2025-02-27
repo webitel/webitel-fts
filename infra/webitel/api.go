@@ -85,12 +85,20 @@ func (c *Client) GetSession(ctx context.Context, token string) (*model.Session, 
 		Scopes:   nil,
 	}
 
+	hasAdminRead := false
+	for _, v := range res.Permissions {
+		if v.Id == "read" {
+			hasAdminRead = true
+			break
+		}
+	}
+
 	for _, scope := range res.Scope {
 		s.Scopes = append(s.Scopes, model.SessionPermission{
 			Id:     scope.Id,
 			Class:  scope.Class,
-			Obac:   scope.Obac,
-			Rbac:   scope.Rbac,
+			Obac:   scope.Obac && !hasAdminRead,
+			Rbac:   scope.Rbac && !hasAdminRead,
 			Access: scope.Access,
 		})
 	}
