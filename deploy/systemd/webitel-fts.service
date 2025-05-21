@@ -1,0 +1,12 @@
+[Unit]
+After=network.target consul.service rabbitmq-server.service postgresql.service
+
+[Service]
+Type=simple
+Restart=always
+EnvironmentFile=/etc/default/webitel-fts.env
+TimeoutStartSec=0
+ExecStart=/usr/local/bin/webitel-fts server
+
+[Install]
+WantedBy=default.target
