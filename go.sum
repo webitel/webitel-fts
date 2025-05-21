@@ -234,8 +234,8 @@ github.com/stretchr/testify v1.8.2/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o
 github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926/go.mod h1:9ESjWnEqriFuLhtthL60Sar/7RFoluCcXsuvEwTV5KM=
-github.com/urfave/cli/v2 v2.27.5 h1:WoHEJLdsXr6dDWoJgMq/CboDmyY/8HMMH1fTECbih+w=
-github.com/urfave/cli/v2 v2.27.5/go.mod h1:3Sevf16NykTbInEnD0yKkjDAeZDS0A6bzhBH5hrMvTQ=
+github.com/urfave/cli/v2 v2.27.6 h1:VdRdS98FNhKZ8/Az8B7MTyGQmpIr36O1EHybx/LaZ4g=
+github.com/urfave/cli/v2 v2.27.6/go.mod h1:3Sevf16NykTbInEnD0yKkjDAeZDS0A6bzhBH5hrMvTQ=
 github.com/webitel/engine v0.0.0-20250122114523-e9fa861e992a h1:bFoEo8xtSB1eMepWvoFgZt7yAlTr9yj7MYuGC7EAhHg=
 github.com/webitel/engine v0.0.0-20250122114523-e9fa861e992a/go.mod h1:XNNd1MIF5NEOAZ+f6woCLfkxJP/Z8aQyEUN1zyMLfXw=
 github.com/webitel/webitel-go-kit v0.0.13-0.20240908192731-3abe573c0e41 h1:vj6qE8RtTyz8B4syfUDCkZqULLJ/4I+LS0Rw5W7mao0=

@@ -11,7 +11,7 @@ require (
 	github.com/mbobakov/grpc-consul-resolver v1.5.3
 	github.com/opensearch-project/opensearch-go/v2 v2.3.0
 	github.com/rabbitmq/amqp091-go v1.10.0
-	github.com/urfave/cli/v2 v2.27.5
+	github.com/urfave/cli/v2 v2.27.6
 	github.com/webitel/engine v0.0.0-20250122114523-e9fa861e992a
 	github.com/webitel/webitel-fts/pkg/client v0.0.0-00010101000000-000000000000
 	github.com/webitel/webitel-go-kit v0.0.13-0.20240908192731-3abe573c0e41
