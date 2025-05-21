@@ -51,11 +51,14 @@ func NewSubscriber(p *pubsub.Manager, log *wlog.Logger, svc SubscriberService) *
 
 		if err = channel.DeclareDurableQueue(queueName, pubsub.Headers{
 			"x-dead-letter-exchange": rejectExchange,
+			"x-queue-type":           "quorum",
 		}); err != nil {
 			return err
 		}
 
-		if err = channel.DeclareDurableQueue(rejectExchange, nil); err != nil {
+		if err = channel.DeclareDurableQueue(rejectExchange, pubsub.Headers{
+			"x-queue-type": "quorum",
+		}); err != nil {
 			return err
 		}
 
