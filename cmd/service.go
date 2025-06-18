@@ -114,7 +114,7 @@ func apiFlags(cfg *config.Config) []cli.Flag {
 			Name:        "pubsub",
 			Category:    "service/pubsub",
 			Usage:       "publish/subscribe rabbitmq broker connection string",
-			Value:       "amqp://webitel:webitel@127.0.0.1:5672/",
+			Value:       "amqp://admin:admin@127.0.0.1:5672/",
 			Destination: &cfg.Pubsub.Address,
 			Aliases:     []string{"p"},
 			EnvVars:     []string{"PUBSUB"},
