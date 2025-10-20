@@ -11,7 +11,7 @@ require (
 	github.com/mbobakov/grpc-consul-resolver v1.5.3
 	github.com/opensearch-project/opensearch-go/v2 v2.3.0
 	github.com/rabbitmq/amqp091-go v1.10.0
-	github.com/urfave/cli/v2 v2.27.6
+	github.com/urfave/cli/v2 v2.27.7
 	github.com/webitel/engine v0.0.0-20250122114523-e9fa861e992a
 	github.com/webitel/webitel-fts/pkg/client v0.0.0-00010101000000-000000000000
 	github.com/webitel/webitel-go-kit v0.0.13-0.20240908192731-3abe573c0e41
@@ -28,7 +28,7 @@ require (
 require (
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
