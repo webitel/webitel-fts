@@ -1,6 +1,6 @@
 module github.com/webitel/webitel-fts
 
-go 1.23.4
+go 1.24.0
 
 require (
 	github.com/georgysavva/scany/v2 v2.1.4
@@ -19,7 +19,7 @@ require (
 	go.opentelemetry.io/otel v1.36.0
 	go.opentelemetry.io/otel/sdk v1.34.0
 	go.opentelemetry.io/otel/trace v1.36.0
-	golang.org/x/sync v0.14.0
+	golang.org/x/sync v0.17.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20250218202821-56aae31c358a
 	google.golang.org/grpc v1.72.1
 	google.golang.org/protobuf v1.36.6
