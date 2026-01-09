@@ -11,7 +11,7 @@ func (p *pubsub) Send(exchange string, rk string, body []byte) error {
 
 func TestClient(t *testing.T) {
 	c := New(&pubsub{})
-	c.Create(1, "aaa", 1, map[string]any{
-		"a": "a",
+	c.Create(1, "cases", 1, map[string]any{
+		"description": "Value description",
 	})
 }
