@@ -3,6 +3,7 @@ package model
 var ServiceName = "fts"
 
 var versions = []string{
+	"26.02",
 	"25.12",
 	"25.10",
 	"25.08",
