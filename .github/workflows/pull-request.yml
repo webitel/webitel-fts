@@ -52,7 +52,8 @@ jobs:
       package-description: ${{ github.event.repository.description }}
       package-contents: |
         src=deploy/systemd/webitel-fts.service dst=/etc/systemd/system/webitel-fts.service type=config
-        src=.env.example dst=/etc/default/webitel-fts type=config
+        src=mapping/ dst=/usr/share/webitel/webitel-fts/mapping
+        src=.env.example dst=/etc/default/webitel-fts type=config mode=0640
         
 
       scripts: |
