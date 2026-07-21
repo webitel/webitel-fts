@@ -2,15 +2,4 @@ package model
 
 var ServiceName = "fts"
 
-var versions = []string{
-	"26.02",
-	"25.12",
-	"25.10",
-	"25.08",
-	"25.05",
-	"25.04",
-	"25.02",
-	"24.10",
-}
-
-var CurrentVersion string = versions[0]
+var CurrentVersion string = "dev"
