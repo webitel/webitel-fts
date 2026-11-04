@@ -33,7 +33,13 @@
             "comment": {
               "type": "text",
               "analyzer": "ngram_analyzer",
-              "search_analyzer": "standard"
+              "search_analyzer": "standard",
+              "fields": {
+                "full": {
+                  "type": "text",
+                  "analyzer": "standard"
+                }
+              }
             },
             "parent_id": {
               "type": "long"
