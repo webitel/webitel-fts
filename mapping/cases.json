@@ -33,27 +33,57 @@
             "description": {
               "type": "text",
               "analyzer": "ngram_analyzer",
-              "search_analyzer": "standard"
+              "search_analyzer": "standard",
+              "fields": {
+                "full": {
+                  "type": "text",
+                  "analyzer": "standard"
+                }
+              }
             },
             "close_result": {
               "type": "text",
               "analyzer": "ngram_analyzer",
-              "search_analyzer": "standard"
+              "search_analyzer": "standard",
+              "fields": {
+                "full": {
+                  "type": "text",
+                  "analyzer": "standard"
+                }
+              }
             },
             "rating_comment": {
               "type": "text",
               "analyzer": "ngram_analyzer",
-              "search_analyzer": "standard"
+              "search_analyzer": "standard",
+              "fields": {
+                "full": {
+                  "type": "text",
+                  "analyzer": "standard"
+                }
+              }
             },
             "subject": {
               "type": "text",
               "analyzer": "ngram_analyzer",
-              "search_analyzer": "standard"
+              "search_analyzer": "standard",
+              "fields": {
+                "full": {
+                  "type": "text",
+                  "analyzer": "standard"
+                }
+              }
             },
             "contact_info": {
               "type": "text",
               "analyzer": "ngram_analyzer",
-              "search_analyzer": "standard"
+              "search_analyzer": "standard",
+              "fields": {
+                "full": {
+                  "type": "text",
+                  "analyzer": "standard"
+                }
+              }
             }
           }
         }
